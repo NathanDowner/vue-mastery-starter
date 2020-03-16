@@ -1,5 +1,39 @@
 var eventBus = new Vue()
 
+Vue.component('product-detail-tabs', {
+    props: {
+        details: {
+            type: Array,
+            required: true
+        },
+        shipping: {
+            type: Boolean,
+            required: true
+        }
+    },
+    template: `
+        <div>
+            <span
+                class="tab"
+                v-bind:class="{ activeTab: selectedTab === tab }"
+                v-for="(tab, index) in tabs"
+                v-bind:key="index"
+                @click="selectedTab = tab"
+            >{{ tab }}</span>
+            <ul v-show="selectedTab === 'Details'">
+                <li v-for="detail in details"> {{ detail }}</li>
+            </ul>
+            <p v-show="selectedTab !== 'Details'">Shipping: {{ shipping }}</p>
+        </div>
+    `,
+    data() {
+        return {
+            tabs: ['Details', 'Shipping'],
+            selectedTab: 'Details'
+        }
+    }
+})
+
 Vue.component('product-tabs', {
     props: {
         reviews: {
@@ -132,11 +166,11 @@ Vue.component('product', {
                 <h1>{{ title }}</h1>
                 <p v-if="inStock">In Stock</p>
                 <p v-else>Out of Stock</p>
-                <p>Shipping: {{ shipping }}</p>
 
-                <ul>
-                    <li v-for="detail in details"> {{detail}}</li>
-                </ul>
+                <product-detail-tabs
+                    v-bind:details="details"
+                    v-bind:shipping="premium"
+                ></product-detail-tabs>
 
                 <div v-for="(variant, index) in variants" 
                     v-bind:key="variant.id"
